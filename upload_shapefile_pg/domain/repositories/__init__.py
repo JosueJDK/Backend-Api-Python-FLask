@@ -1,0 +1,1 @@
+from .UploadShapePostgres import UploadShapePostgresRepository
