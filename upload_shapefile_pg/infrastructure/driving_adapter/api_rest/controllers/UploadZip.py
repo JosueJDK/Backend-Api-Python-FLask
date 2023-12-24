@@ -48,7 +48,6 @@ class UploadZipController:
 
     @staticmethod
     def bad_request(message):
-        print(message)
         """
         Returns a 400 Bad Request response.
 
