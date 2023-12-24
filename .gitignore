@@ -36,7 +36,7 @@ coverage.xml
 venv/
 env/
 ENV/
-.env
+.env/
 
 # IDEs and editors
 .idea/
