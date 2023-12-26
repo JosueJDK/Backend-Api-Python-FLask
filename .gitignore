@@ -49,4 +49,5 @@ ENV/
 # Exclude files
 .env
 *.hdf5
+*.parquet
 .python-version
