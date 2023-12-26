@@ -46,5 +46,7 @@ ENV/
 .komodotools/
 /.replit
 
-# Exclude .env file
+# Exclude files
 .env
+*.hdf5
+.python-version

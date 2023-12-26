@@ -38,3 +38,6 @@ tzdata==2023.3
 Werkzeug==3.0.1
 zope.event==5.0
 zope.interface==6.1
+fuzzywuzzy==0.18.0
+numpy==1.26.2
+vaex==4.17.0
