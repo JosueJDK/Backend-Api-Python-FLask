@@ -1,1 +1,4 @@
 from .search_addres_street_composite import create_search_address_street_controller
+from .search_addres_departamento_composite import search_addres_departamento_controller
+from .search_addres_provincia_composite import search_addres_provincia_controller
+from .search_addres_distrito_composite import search_addres_distrito_controller

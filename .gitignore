@@ -50,4 +50,5 @@ ENV/
 .env
 *.hdf5
 *.parquet
+*.csv
 .python-version

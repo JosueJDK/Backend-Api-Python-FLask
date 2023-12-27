@@ -1,1 +1,4 @@
 from .SearchAddressStreet import SearchAddressStreetController
+from .SearchAddressDepartamento import SearchAddressDepartamentoController
+from .SearchAddressProvincia import SearchAddressProvinciaController
+from .SearchAddressDistrito import SearchAddressDistritoController

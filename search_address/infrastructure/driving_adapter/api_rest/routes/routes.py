@@ -1,19 +1,63 @@
 from flask import jsonify, Blueprint, request
-from search_address.infrastructure.driving_adapter.api_rest.composer import create_search_address_street_controller
+from search_address.infrastructure.driving_adapter.api_rest.composer import (
+    create_search_address_street_controller, 
+    search_addres_departamento_controller,
+    search_addres_provincia_controller,
+    search_addres_distrito_controller)
 from shared.adapter import flask_adapter
 import os
 from dotenv import load_dotenv
 from search_address.infrastructure.driven_adapter.vaex_core import vaex
 
 load_dotenv()
-df = vaex.open(str(os.getenv("ROUTE_FILE_DATA_ADDRESS_STREET_HDF5")))
 
 api_routes_bp = Blueprint("api_routes_search_address", __name__)
+
+df_departamento = vaex.open("/home/ubuntu/clean_architecture/public/data/PERU_DEPARTAMENTOS.hdf5")
+@api_routes_bp.route("/api/search/address/departamento", methods=["POST"])
+async def search_address_departamento():
+    
+    response = await flask_adapter(request=request, api_route=search_addres_departamento_controller(df_departamento))
+
+    return jsonify({
+                "status" : response.json().get("status"),
+                "code" : response.status_code,
+                "message" : response.json().get('message'),
+                "data" : response.json().get("data")
+            }), response.status_code
+
+df_provincia = vaex.open("/home/ubuntu/clean_architecture/public/data/PERU_PROVINCIAS.hdf5")
+@api_routes_bp.route("/api/search/address/provincia", methods=["POST"])
+async def search_address_provincia():
+    
+    response = await flask_adapter(request=request, api_route=search_addres_provincia_controller(df_provincia))
+
+    return jsonify({
+                "status" : response.json().get("status"),
+                "code" : response.status_code,
+                "message" : response.json().get('message'),
+                "data" : response.json().get("data")
+            }), response.status_code
+
+df_distrito = vaex.open("/home/ubuntu/clean_architecture/public/data/PERU_DISTRITOS.hdf5")
+@api_routes_bp.route("/api/search/address/distrito", methods=["POST"])
+async def search_address_distrito():
+    
+    response = await flask_adapter(request=request, api_route=search_addres_distrito_controller(df_distrito))
+
+    return jsonify({
+                "status" : response.json().get("status"),
+                "code" : response.status_code,
+                "message" : response.json().get('message'),
+                "data" : response.json().get("data")
+            }), response.status_code
+
+df_street = vaex.open("/home/ubuntu/clean_architecture/public/data/PERU_CALLES.hdf5")
 
 @api_routes_bp.route("/api/search/address/street", methods=["POST"])
 async def search_address_street():
     
-    response = await flask_adapter(request=request, api_route=create_search_address_street_controller(df))
+    response = await flask_adapter(request=request, api_route=create_search_address_street_controller(df_street))
 
     return jsonify({
                 "status" : response.json().get("status"),

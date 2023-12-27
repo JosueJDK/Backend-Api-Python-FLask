@@ -1,0 +1,5 @@
+from search_address.infrastructure.driving_adapter.api_rest.controllers import SearchAddressProvinciaController
+
+def search_addres_provincia_controller(dataframe) -> SearchAddressProvinciaController:
+    search_address_provincia_controller = SearchAddressProvinciaController(dataframe)
+    return search_address_provincia_controller
