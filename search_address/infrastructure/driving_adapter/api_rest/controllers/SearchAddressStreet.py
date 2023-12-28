@@ -5,8 +5,9 @@ import json
 
 class SearchAddressStreetController:
 
-    def __init__(self, dataframe):
+    def __init__(self, dataframe, dataframe2):
         self.df = dataframe
+        self.df2 = dataframe2
 
     async def route(self, http_request: Type[Request]) -> Response:
         """
@@ -27,16 +28,31 @@ class SearchAddressStreetController:
             _direccion = http_request.json['direccion'] if 'direccion' in body_params else False
             _numpuerta = http_request.json['numpuerta'] if 'numpuerta' in body_params else False
             
-
             if (_direccion and
-                len(_direccion) != 0
+                len(_direccion) != 0 and
+                _numpuerta and
+                len(str(_numpuerta)) != 0
             ):                                
                 result_data = self.df.search.address_street(
-                    _departamento if len(_departamento) != 0 else False,
-                    _provincia if len(_provincia) != 0 else False,
-                    _distrito if len(_distrito) != 0 else False,
+                    _departamento if len(str(_departamento)) != 0 else False,
+                    _provincia if len(str(_provincia)) != 0 else False,
+                    _distrito if len(str(_distrito)) != 0 else False,
                     _direccion,
-                    _numpuerta if len(_numpuerta) != 0 else False,
+                    _numpuerta,
+                ).to_pandas_df()
+
+                json_data = result_data.to_json(orient='records')
+
+                return self.success_response("data", {"data_search":json.loads(json_data)})
+            elif (_direccion and
+                len(_direccion) != 0
+            ):                                
+                result_data = self.df2.search.address_street(
+                    _departamento if len(str(_departamento)) != 0 else False,
+                    _provincia if len(str(_provincia)) != 0 else False,
+                    _distrito if len(str(_distrito)) != 0 else False,
+                    _direccion,
+                    False
                 ).to_pandas_df()
 
                 json_data = result_data.to_json(orient='records')
@@ -47,6 +63,7 @@ class SearchAddressStreetController:
                 
             
         except Exception as e:
+            print(e)
             return self.server_error(str(e))
 
     @staticmethod

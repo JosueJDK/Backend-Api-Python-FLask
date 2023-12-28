@@ -1,6 +1,5 @@
 import vaex
 from fuzzywuzzy import fuzz
-
 import os
 import multiprocessing
 
@@ -65,30 +64,30 @@ class SearchAddressStreet(object):
             return df
         return  df.head(10)
 
-    def address_departamento(self, departamento):
-        self.departamento = departamento.upper()
-        df = self.df.copy()
-        return self.return_dataframe(df, 'SIMILARITY_DEPARTAMENTO', [df['DEPARTAMENTO']])
+    def address_departamento(self):
+        return self.df.copy()
     
-    def address_provincia(self, departamento=False, provincia=False):
+    def address_provincia(self, id_departamento=False, provincia=False):
         self.provincia = provincia.upper()
         df = self.df.copy()
-        if departamento:
-            df = df[df.DEPARTAMENTO == departamento.upper()]
-        return self.return_dataframe(df, 'SIMILARITY_PROVINCIA', [df['PROVINCIA']])
+        if id_departamento:
+            df = df[df.ID_DEPARTAMENTO == int(id_departamento)]
+        df = self.return_dataframe(df, 'SIMILARITY_PROVINCIA', [df['PROVINCIA']])    
+        return df.sort('SIMILARITY_PROVINCIA', ascending=False)
     
-    def address_distrito(self, departamento=False, provincia=False, distrito=False):
+    def address_distrito(self, id_departamento=False, id_provincia=False, distrito=False):
         
         self.distrito = distrito.upper()
         df = self.df.copy()
 
-        if departamento:
-            df = df[df.DEPARTAMENTO == departamento.upper()]
+        if id_departamento:
+            df = df[df.ID_DEPARTAMENTO == int(id_departamento)]
 
-        if provincia:
-            df = df[df.PROVINCIA == provincia.upper()]
+        if id_provincia:
+            df = df[df.ID_PROVINCIA == int(id_provincia)]
         
-        return self.return_dataframe(df, 'SIMILARITY_DISTRITO', [df['DISTRITO']])
+        df = self.return_dataframe(df, 'SIMILARITY_DISTRITO', [df['DISTRITO']])    
+        return df.sort('SIMILARITY_DISTRITO', ascending=False)
 
     
     def address_street(self, departamento=False, provincia=False, distrito=False, direccion=False, numpuerta=False):
@@ -100,16 +99,19 @@ class SearchAddressStreet(object):
             df = df[df.PROVINCIA == provincia.upper()]
 
         if distrito:
-            print(df)
-            df = df[df.DISTRITO == distrito.upper()]            
-        if direccion:
+            df = df[df.DISTRITO == distrito.upper()]
+        if direccion and numpuerta:
+            self.numpuerta = numpuerta
             self.direccion = direccion.upper()
-            df['SIMILARITY_STREET'] = df.apply(self.calculate_similarity_v2, arguments=[df['TIPO_VIA'] + ' ' + df['NOM_VIA']])
+            df['SIMILARITY_STREET'] = df.apply(self.calculate_similarity_v2, arguments=[df['VIA']])
             df = df.sort('SIMILARITY_STREET', ascending=False)
 
-        if numpuerta:
-            self.numpuerta = numpuerta
             df['SIMILARITY_NUMPUERTA'] = df.apply(self.find_closest_num_with_similarity, arguments=[df['NUM_PUERTA']])
             df['SIMILARITY_STREET_NUMPUERTA'] = df['SIMILARITY_NUMPUERTA'] + df['SIMILARITY_STREET']
-            df = df.sort('SIMILARITY_STREET_NUMPUERTA', ascending=False)
+            df = df.sort('SIMILARITY_STREET_NUMPUERTA', ascending=False)         
+
+        if direccion:            
+            self.direccion = direccion.upper()
+            df['SIMILARITY_STREET'] = df.apply(self.calculate_similarity_v2, arguments=[df['VIA']])
+            df = df.sort('SIMILARITY_STREET', ascending=False)        
         return  df.head(10)

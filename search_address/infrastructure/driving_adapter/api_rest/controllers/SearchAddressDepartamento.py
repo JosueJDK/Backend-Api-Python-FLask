@@ -10,19 +10,11 @@ class SearchAddressDepartamentoController:
 
     async def route(self, http_request: Type[Request]) -> Response:
         try:
-            body_params = http_request.json.keys()
+            result_data = self.df.to_pandas_df()
+            json_data = result_data.to_json(orient='records')
 
-            if (
-                "departamento" in body_params
-            ):        
-                result_data = self.df.search.address_departamento(http_request.json['departamento']).to_pandas_df()
-                json_data = result_data.to_json(orient='records')
-
-                return self.success_response("data", {"data_search":json.loads(json_data)})
-            else:
-                return self.bad_request("Todos los campos son requeridos.")
-                
-            
+            return self.success_response("data", {"data_search":json.loads(json_data)})
+        
         except Exception as e:
             return self.server_error(str(e))
 

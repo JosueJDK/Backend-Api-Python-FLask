@@ -16,10 +16,10 @@ class SearchAddressProvinciaController:
             _provincia = http_request.json['provincia'] if 'provincia' in body_params else False
 
             if (_provincia and
-                len(_provincia) != 0
+                len(str(_provincia)) != 0
             ):        
                 result_data = self.df.search.address_provincia(
-                    _departamento if len(_departamento) != 0 else False,
+                    _departamento if len(str(_departamento)) != 0 else False,
                     _provincia
                     ).to_pandas_df()
                 

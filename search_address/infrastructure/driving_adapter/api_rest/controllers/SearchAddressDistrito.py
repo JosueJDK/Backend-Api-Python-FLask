@@ -18,10 +18,10 @@ class SearchAddressDistritoController:
 
             if (_distrito and
                 len(_distrito) != 0
-            ):        
+            ):
                 result_data = self.df.search.address_distrito(
-                    _departamento if len(_departamento) != 0 else False,
-                    _provincia if len(_provincia) != 0 else False,
+                    _departamento if len((str(_departamento))) != 0 else False,
+                    _provincia if len((str(_provincia))) != 0 else False,
                     _distrito
                     ).to_pandas_df()
                 

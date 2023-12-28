@@ -1,7 +1,8 @@
 import os
 from typing import Type
 from httpx import Request, Response
-from shared.errors import HttpErrors
+from upload_shapefile_pg.infrastructure.driven_adapter.geoserver_publish import publish_layer_in_geoserver
+from upload_shapefile_pg.infrastructure.driven_adapter.geoserver_bbox import get_layer_bbox
 from upload_shapefile_pg.domain.services import FileUploadService, DirectoryFileDeleterService
 from upload_shapefile_pg.application.use_cases import ShapefileUploadUseCase
 from upload_shapefile_pg.infrastructure.implementation import ShapefileToPostgresUploaderRepository
@@ -36,9 +37,11 @@ class UploadZipController:
                 return self.bad_request("Formato de archivo no válido")
             
             shapefile_upload_use_case = ShapefileUploadUseCase(ShapefileToPostgresUploaderRepository())
-            data = await shapefile_upload_use_case.run(self.upload_folder, zip_file_name)
-
-            return self.success_response("Carga de datos exitosa", {"table_name":data})
+            uploaded_table_name = await shapefile_upload_use_case.run(self.upload_folder, zip_file_name)
+            
+            message_publish = publish_layer_in_geoserver(uploaded_table_name)
+            
+            return self.success_response(message_publish, get_layer_bbox(uploaded_table_name))
         except Exception as e:
             return self.server_error(str(e))
         
