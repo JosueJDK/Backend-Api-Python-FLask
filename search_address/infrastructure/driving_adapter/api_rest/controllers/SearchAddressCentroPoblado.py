@@ -3,11 +3,10 @@ from httpx import Request, Response
 from shared.errors import HttpErrors
 import json
 
-class SearchAddressStreetController:
+class SearchAddressCentroPobladoController:
 
-    def __init__(self, dataframe, dataframe2):
+    def __init__(self, dataframe):
         self.df = dataframe
-        self.df2 = dataframe2
 
     async def route(self, http_request: Type[Request]) -> Response:
         """
@@ -25,34 +24,16 @@ class SearchAddressStreetController:
             _departamento = http_request.json['departamento'] if 'departamento' in body_params else False
             _provincia = http_request.json['provincia'] if 'provincia' in body_params else False
             _distrito = http_request.json['distrito'] if 'distrito' in body_params else False
-            _direccion = http_request.json['direccion'] if 'direccion' in body_params else False
-            _numpuerta = http_request.json['numpuerta'] if 'numpuerta' in body_params else False
+            _centropoblado = http_request.json['centropoblado'] if 'centropoblado' in body_params else False
 
-            if (_direccion and
-                len(_direccion) != 0 and
-                _numpuerta and
-                len(str(_numpuerta)) != 0
+            if (_centropoblado and
+                len(_centropoblado) != 0
             ):                                
-                result_data = self.df.search.address_street(
+                result_data = self.df.search.address_centropoblado(
                     _departamento if len(str(_departamento)) != 0 else False,
                     _provincia if len(str(_provincia)) != 0 else False,
                     _distrito if len(str(_distrito)) != 0 else False,
-                    _direccion,
-                    _numpuerta,
-                ).to_pandas_df()
-
-                json_data = result_data.to_json(orient='records')
-
-                return self.success_response("data", {"data_search":json.loads(json_data)})
-            elif (_direccion and
-                len(_direccion) != 0
-            ):                                
-                result_data = self.df2.search.address_street(
-                    _departamento if len(str(_departamento)) != 0 else False,
-                    _provincia if len(str(_provincia)) != 0 else False,
-                    _distrito if len(str(_distrito)) != 0 else False,
-                    _direccion,
-                    False
+                    _centropoblado
                 ).to_pandas_df()
 
                 json_data = result_data.to_json(orient='records')

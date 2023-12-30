@@ -3,7 +3,10 @@ from search_address.infrastructure.driving_adapter.api_rest.composer import (
     create_search_address_street_controller, 
     search_addres_departamento_controller,
     search_addres_provincia_controller,
-    search_addres_distrito_controller)
+    search_addres_distrito_controller,
+    search_addres_manzana_controller,
+    search_addres_urbanizacion_controller,
+    search_addres_centropoblado_controller)
 from shared.adapter import flask_adapter
 import os
 from dotenv import load_dotenv
@@ -58,6 +61,46 @@ df_vias = vaex.open("public/data/PERU_VIAS_UNICAS.hdf5")
 async def search_address_street():
     
     response = await flask_adapter(request=request, api_route=create_search_address_street_controller(df_street, df_vias))
+
+    return jsonify({
+                "status" : response.json().get("status"),
+                "code" : response.status_code,
+                "message" : response.json().get('message'),
+                "data" : response.json().get("data")
+            }), response.status_code
+
+
+df_urbanizacion = vaex.open("/home/ubuntu/clean_architecture/public/data/PERU_MANZANAS_UNICAS.hdf5")
+@api_routes_bp.route("/api/search/address/urbanizacion", methods=["POST"])
+async def search_address_urbanizacion():
+    
+    response = await flask_adapter(request=request, api_route=search_addres_urbanizacion_controller(df_urbanizacion))
+
+    return jsonify({
+                "status" : response.json().get("status"),
+                "code" : response.status_code,
+                "message" : response.json().get('message'),
+                "data" : response.json().get("data")
+            }), response.status_code
+
+df_manzanas = vaex.open("/home/ubuntu/clean_architecture/public/data/PERU_MANZANAS.hdf5")
+@api_routes_bp.route("/api/search/address/manzana", methods=["POST"])
+async def search_address_manzana():
+    
+    response = await flask_adapter(request=request, api_route=search_addres_manzana_controller(df_manzanas))
+
+    return jsonify({
+                "status" : response.json().get("status"),
+                "code" : response.status_code,
+                "message" : response.json().get('message'),
+                "data" : response.json().get("data")
+            }), response.status_code
+
+df_centro_poblado = vaex.open("/home/ubuntu/clean_architecture/public/data/PERU_CENTROS_POBLADOS.hdf5")
+@api_routes_bp.route("/api/search/address/centro_poblado", methods=["POST"])
+async def search_address_centropoblado():
+    
+    response = await flask_adapter(request=request, api_route=search_addres_centropoblado_controller(df_centro_poblado))
 
     return jsonify({
                 "status" : response.json().get("status"),

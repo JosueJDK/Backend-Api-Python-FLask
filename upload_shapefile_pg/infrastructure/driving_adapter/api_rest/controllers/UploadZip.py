@@ -1,6 +1,6 @@
 import os
 from typing import Type
-from httpx import Request, Response
+from httpx import Request, Response, URL
 from upload_shapefile_pg.infrastructure.driven_adapter.geoserver_publish import publish_layer_in_geoserver
 from upload_shapefile_pg.infrastructure.driven_adapter.geoserver_bbox import get_layer_bbox
 from upload_shapefile_pg.domain.services import FileUploadService, DirectoryFileDeleterService
@@ -26,10 +26,16 @@ class UploadZipController:
         - Response: HTTP response object.
         """
         try:
-            # Check if the file is provided
+            parsed_url = URL(http_request.url)
+            query_params = parsed_url.params
+            
+            
+            if 'file_name' not in list(query_params.keys()):
+                return self.bad_request("Nombre de capa no proporcionado o no válido")
+
             if 'file' not in http_request.files or not http_request.files['file'].filename:
                 return self.bad_request("Archivo no proporcionado o no válido")
-
+            
             file_upload_service = FileUploadService(http_request.files['file'], self.allowed_extensions, self.upload_folder)
             zip_file_name = file_upload_service.save_file()
             
@@ -37,9 +43,9 @@ class UploadZipController:
                 return self.bad_request("Formato de archivo no válido")
             
             shapefile_upload_use_case = ShapefileUploadUseCase(ShapefileToPostgresUploaderRepository())
-            uploaded_table_name = await shapefile_upload_use_case.run(self.upload_folder, zip_file_name)
+            uploaded_table_name = await shapefile_upload_use_case.run(self.upload_folder, zip_file_name, query_params.get("file_name"))
             
-            message_publish = publish_layer_in_geoserver(uploaded_table_name)
+            message_publish = publish_layer_in_geoserver(query_params.get("file_name"))
             
             return self.success_response(message_publish, get_layer_bbox(uploaded_table_name))
         except Exception as e:

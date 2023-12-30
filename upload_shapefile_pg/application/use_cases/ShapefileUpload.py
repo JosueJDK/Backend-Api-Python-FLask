@@ -19,7 +19,7 @@ class ShapefileUploadUseCase:
         self._zip_extractor = ZipFileExtractorService()
         self._file_searcher = SearchFileService()
 
-    async def run(self, upload_folder: str, zip_file_name: str) -> str:
+    async def run(self, upload_folder: str, zip_file_name: str, table_name:str) -> str:
         """
         Runs the sequence of actions for shapefile upload.
 
@@ -40,7 +40,7 @@ class ShapefileUploadUseCase:
             path_file_shp = await self._file_searcher.search_file_shape(unzipped_files)
             
             # Upload Shape File to Postgres
-            return await self._upload_shp_postgres.upload_shp_postgres(path_file_shp, zip_file_name.rstrip('.zip'))
+            return await self._upload_shp_postgres.upload_shp_postgres(path_file_shp, table_name)
             
         except Exception as e:
             raise e

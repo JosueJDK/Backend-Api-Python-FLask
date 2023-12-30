@@ -1,0 +1,5 @@
+from search_address.infrastructure.driving_adapter.api_rest.controllers import SearchAddressCentroPobladoController
+
+def search_addres_centropoblado_controller(dataframe) -> SearchAddressCentroPobladoController:
+    search_address_manzana_controller = SearchAddressCentroPobladoController(dataframe)
+    return search_address_manzana_controller
